@@ -46,6 +46,18 @@ namespace PiecewiseLinearGraphing
             return SetupGraph(kneePoints.LeftKneePoint, kneePoints.RightKneePoint, max_XY);
         }
 
+        public void ClearExposures()
+        {
+            if (_exposures.Count > 0)
+            {
+                foreach (Exposure exp in _exposures)
+                {
+                    KneePointsChanged -= exp.KneePointsChangedEventHandler;
+                }
+                _exposures.Clear();
+            }
+        }
+
         public static double DegreesToRadians(double degrees)
         {
             return degrees * (Math.PI / 180);
@@ -70,18 +82,6 @@ namespace PiecewiseLinearGraphing
             }
             return false;
         }
-
-        public void RemoveExposure()
-        {
-            if (_exposures.Count > 0)
-            {
-                foreach (Exposure exp in _exposures)
-                {
-                    KneePointsChanged -= exp.KneePointsChangedEventHandler;
-                }
-                _exposures.Clear();
-            }
-        }
     }
 
     public class MultipleExposureGraph : Graph
@@ -102,11 +102,6 @@ namespace PiecewiseLinearGraphing
                 return true;
             }
             return false;
-        }
-
-        public void ClearExposures()
-        {
-            _exposures.Clear();
         }
 
         public void SetMultipleExposures(decimal startVal, decimal incrementVal, decimal stopVal)

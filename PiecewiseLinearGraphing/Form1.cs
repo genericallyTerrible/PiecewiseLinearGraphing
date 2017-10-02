@@ -142,7 +142,7 @@ namespace PiecewiseLinearGraphing
         {
             NumericUpDown nud = (NumericUpDown)sender;
             SingleExposureGraph seg = (SingleExposureGraph)graph;
-            seg.RemoveExposure();
+            seg.ClearExposures();
 
             double theta = Graph.DegreesToRadians((double)slope_UpDown.Value);
 
