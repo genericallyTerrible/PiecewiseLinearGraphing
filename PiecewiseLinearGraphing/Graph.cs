@@ -106,7 +106,7 @@ namespace PiecewiseLinearGraphing
 
         public void SetMultipleExposures(decimal startVal, decimal incrementVal, decimal stopVal)
         {
-            for (decimal i = startVal; (i <= stopVal) && (((i-startVal) / incrementVal) + 1 < 50); i += incrementVal)
+            for (decimal i = startVal; (i <= stopVal) && (((i - startVal) / incrementVal) + 1 < 50); i += incrementVal)
             {
                 if (_kneePoints.A0 < i && i < _kneePoints.A0 + incrementVal)
                 {

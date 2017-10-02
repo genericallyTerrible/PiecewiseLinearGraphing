@@ -59,10 +59,15 @@ namespace PiecewiseLinearGraphing
 
             if (_slope < a0)
             {
-                _dataPoints.Add(new Point(_max_XY.X, _slope));
+                decimal finalSaturationVal = _slope * Max_XY.X;
+                _dataPoints.Add(new Point(_max_XY.X, finalSaturationVal));
             }
             else
             {
+                if (_slope == a0)
+                {
+                    int j = 0;
+                }
                 decimal phaseOneSaturation = _kneePoints.LeftKneePoint.Y / _slope;
                 _dataPoints.Add(new Point(phaseOneSaturation, _kneePoints.LeftKneePoint.Y));
                 _dataPoints.Add(new Point(_kneePoints.LeftKneePoint.X, _kneePoints.LeftKneePoint.Y));
@@ -99,7 +104,8 @@ namespace PiecewiseLinearGraphing
 
             if (KneePoints.ValidKneePoints(k.NewKneePoints, k.Max_XY))
             {
-                _kneePoints = k.NewKneePoints;
+                _kneePoints = new KneePoints();
+                _kneePoints.SetKneePoints(k.NewKneePoints.LeftKneePoint, k.NewKneePoints.RightKneePoint, k.Max_XY);
                 _max_XY = k.Max_XY;
                 GenerateDataPoints();
             }
