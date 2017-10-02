@@ -1,0 +1,10 @@
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\bin\Debug\PiecewiseLinearGraphing.exe.config
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\bin\Debug\PiecewiseLinearGraphing.exe
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\bin\Debug\PiecewiseLinearGraphing.pdb
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\obj\Debug\PiecewiseLinearGraphing.csprojResolveAssemblyReference.cache
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\obj\Debug\PiecewiseLinearGraphing.Properties.Resources.resources
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\obj\Debug\PiecewiseLinearGraphing.csproj.GenerateResource.Cache
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\obj\Debug\PiecewiseLinearGraphing.csproj.CoreCompileInputs.cache
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\obj\Debug\PiecewiseLinearGraphing.exe
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\obj\Debug\PiecewiseLinearGraphing.pdb
+D:\Users\GenTer\Google Drive\Research\PiecewiseLinearGraphing\PiecewiseLinearGraphing\obj\Debug\PiecewiseLinearGraphing.PiecewiseForm.resources
