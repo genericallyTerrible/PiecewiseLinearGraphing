@@ -64,10 +64,6 @@ namespace PiecewiseLinearGraphing
             }
             else
             {
-                if (_slope == a0)
-                {
-                    int j = 0;
-                }
                 decimal phaseOneSaturation = _kneePoints.LeftKneePoint.Y / _slope;
                 _dataPoints.Add(new Point(phaseOneSaturation, _kneePoints.LeftKneePoint.Y));
                 _dataPoints.Add(new Point(_kneePoints.LeftKneePoint.X, _kneePoints.LeftKneePoint.Y));
