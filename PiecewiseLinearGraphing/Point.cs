@@ -19,5 +19,14 @@ namespace PiecewiseLinearGraphing
             _x = x;
             _y = y;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Point p)
+            {
+                return (X == p.X && Y == p.Y);
+            }
+            return false;
+        }
     }
 }

@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.PiecewiseGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.slope_UpDown = new System.Windows.Forms.NumericUpDown();
             this.slope_Lbl = new System.Windows.Forms.Label();
@@ -48,6 +48,7 @@
             this.singleExposure_RadioButton = new System.Windows.Forms.RadioButton();
             this.multipleExposures_RadioButton = new System.Windows.Forms.RadioButton();
             this.newExposures_Button = new System.Windows.Forms.Button();
+            this.relationship_CheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.PiecewiseGraph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.slope_UpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kneeOneX_UpDown)).BeginInit();
@@ -63,16 +64,16 @@
             this.PiecewiseGraph.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea1.Name = "ChartArea1";
-            this.PiecewiseGraph.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.PiecewiseGraph.Legends.Add(legend1);
+            chartArea5.Name = "ChartArea1";
+            this.PiecewiseGraph.ChartAreas.Add(chartArea5);
+            legend5.Name = "Legend1";
+            this.PiecewiseGraph.Legends.Add(legend5);
             this.PiecewiseGraph.Location = new System.Drawing.Point(13, 13);
             this.PiecewiseGraph.Name = "PiecewiseGraph";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.PiecewiseGraph.Series.Add(series1);
+            series5.ChartArea = "ChartArea1";
+            series5.Legend = "Legend1";
+            series5.Name = "Series1";
+            this.PiecewiseGraph.Series.Add(series5);
             this.PiecewiseGraph.Size = new System.Drawing.Size(516, 351);
             this.PiecewiseGraph.TabIndex = 0;
             this.PiecewiseGraph.Text = "chart1";
@@ -109,9 +110,9 @@
             this.slope_Lbl.AutoSize = true;
             this.slope_Lbl.Location = new System.Drawing.Point(442, 409);
             this.slope_Lbl.Name = "slope_Lbl";
-            this.slope_Lbl.Size = new System.Drawing.Size(37, 13);
+            this.slope_Lbl.Size = new System.Drawing.Size(95, 13);
             this.slope_Lbl.TabIndex = 2;
-            this.slope_Lbl.Text = "Slope:";
+            this.slope_Lbl.Text = "Slope (in degrees):";
             // 
             // kneeOneX_UpDown
             // 
@@ -310,11 +311,24 @@
             this.newExposures_Button.UseVisualStyleBackColor = true;
             this.newExposures_Button.Click += new System.EventHandler(this.newExposures_Button_Click);
             // 
+            // relationship_CheckBox
+            // 
+            this.relationship_CheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.relationship_CheckBox.AutoSize = true;
+            this.relationship_CheckBox.Location = new System.Drawing.Point(191, 419);
+            this.relationship_CheckBox.Name = "relationship_CheckBox";
+            this.relationship_CheckBox.Size = new System.Drawing.Size(84, 30);
+            this.relationship_CheckBox.TabIndex = 15;
+            this.relationship_CheckBox.Text = "Preserve\r\nRelationship";
+            this.relationship_CheckBox.UseVisualStyleBackColor = true;
+            this.relationship_CheckBox.CheckedChanged += new System.EventHandler(this.relationship_CheckBox_CheckedChanged);
+            // 
             // PiecewiseForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(541, 456);
+            this.Controls.Add(this.relationship_CheckBox);
             this.Controls.Add(this.newExposures_Button);
             this.Controls.Add(this.exposureType_GroupBox);
             this.Controls.Add(this.exposureTime_Lbl);
@@ -365,6 +379,7 @@
         private System.Windows.Forms.RadioButton singleExposure_RadioButton;
         private System.Windows.Forms.RadioButton multipleExposures_RadioButton;
         private System.Windows.Forms.Button newExposures_Button;
+        private System.Windows.Forms.CheckBox relationship_CheckBox;
     }
 }
 

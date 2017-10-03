@@ -104,22 +104,13 @@ namespace PiecewiseLinearGraphing
             return false;
         }
 
-        public void SetMultipleExposures(decimal startVal, decimal incrementVal, decimal stopVal)
+        public void SetMultipleExposures()
         {
-            for (decimal i = startVal; (i <= stopVal) && (((i - startVal) / incrementVal) + 1 < 50); i += incrementVal)
+            decimal increments = ((decimal)1.1 * _kneePoints.A2) / 25;
+            decimal maxVal = increments * 25;
+
+            for (decimal i = increments; i <= maxVal; i += increments)
             {
-                if (_kneePoints.A0 < i && i < _kneePoints.A0 + incrementVal)
-                {
-                    AddExposure(_kneePoints.A0);
-                }
-                if (_kneePoints.A1 < i && i < _kneePoints.A1 + incrementVal)
-                {
-                    AddExposure(_kneePoints.A1);
-                }
-                if (_kneePoints.A2 < i && i < _kneePoints.A2 + incrementVal)
-                {
-                    AddExposure(_kneePoints.A2);
-                }
                 AddExposure(i);
             }
         }

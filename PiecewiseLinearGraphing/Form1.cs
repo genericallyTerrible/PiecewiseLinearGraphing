@@ -20,22 +20,18 @@ namespace PiecewiseLinearGraphing
         public PiecewiseForm()
         {
             InitializeComponent();
-            Point leftKneePoint = new Point((decimal)0.7, ((decimal)1 / 3));
-            Point rightKneePoint = new Point((decimal)0.9, ((decimal)2 / 3));
-            Point max_XY = new Point(1, 1);
+            Point max_XY = new Point(100, 100);
+            Point leftKneePoint = new Point(((decimal)0.7 * max_XY.X), ((decimal)1 / 3) * max_XY.Y);
+            Point rightKneePoint = new Point(((decimal)0.9 * max_XY.X), ((decimal)2 / 3) * max_XY.Y);
 
             if (KneePoints.ValidKneePoints(leftKneePoint, rightKneePoint, max_XY))
             {
                 MultipleExposureGraph newGraph = new MultipleExposureGraph();
                 if (newGraph.SetupGraph(leftKneePoint, rightKneePoint, max_XY))
                 {
-                    decimal startVal = (decimal)0.125;
-                    decimal incrementVal = (decimal)0.125;
-                    decimal stopVal = newGraph.KneePoints.A2 + (3 * incrementVal);
-                    newGraph.SetMultipleExposures(startVal, incrementVal, stopVal);
+                    newGraph.SetMultipleExposures();
 
                     graph = newGraph;
-                    setUpDowns();
                 }
 
             }
@@ -59,13 +55,13 @@ namespace PiecewiseLinearGraphing
                 {
                     Minimum = 0,
                     Maximum = (double)newGraph.Max_XY.X,
-                    Interval = (double)(newGraph.Max_XY.X / 4)
+                    Interval = (double)(newGraph.Max_XY.X)
                 },
                 AxisY = new Axis()
                 {
                     Minimum = 0,
                     Maximum = (double)newGraph.Max_XY.Y,
-                    Interval = (double)(newGraph.Max_XY.Y / 4)
+                    Interval = (double)(newGraph.Max_XY.Y)
                 }
             });
 
@@ -78,7 +74,7 @@ namespace PiecewiseLinearGraphing
             {
                 exposure = new Series
                 {
-                    Name = $"Series {i}",
+                    Name = $"Series {i+1}",
                     ChartType = SeriesChartType.Line
                 };
 
@@ -89,6 +85,8 @@ namespace PiecewiseLinearGraphing
 
                 PiecewiseGraph.Series.Add(exposure);
             }
+
+            SetUpDowns();
         }
 
         public static void MarkBreakpoints(Chart chart, Graph graph, int borderWidth = 2)
@@ -124,29 +122,84 @@ namespace PiecewiseLinearGraphing
         }
 
         #region UpDowns
-        public void setUpDowns()
+        public void SetUpDowns()
         {
+            decimal powTenOfMaxX = (int)Math.Floor(Math.Log10((double)graph.Max_XY.X));
+            decimal powTenOfMaxY = (int)Math.Floor(Math.Log10((double)graph.Max_XY.Y));
+
+            decimal xScaling = graph.Max_XY.X * (decimal)Math.Pow(10, (double)(-powTenOfMaxX));
+            decimal yScaling = graph.Max_XY.Y * (decimal)Math.Pow(10, (double)(-powTenOfMaxY));
+
+            exposureTime_UpDown.Maximum = (decimal)Math.Pow(10, (double)powTenOfMaxX + 2);
+            exposureTime_UpDown.Value = (graph.Max_XY.X);
+
             kneeOneX_UpDown.Maximum = graph.Max_XY.X;
             kneeOneX_UpDown.Value = graph.KneePoints.LeftKneePoint.X;
+            kneeOneX_UpDown.Increment = xScaling * (decimal)Math.Pow(10, (double)powTenOfMaxX - 3);
+            kneeOneX_UpDown.DecimalPlaces = (int)Math.Max(0, 4 - powTenOfMaxX);
+
             kneeOneY_UpDown.Maximum = graph.Max_XY.Y;
             kneeOneY_UpDown.Value = graph.KneePoints.LeftKneePoint.Y;
+            kneeOneY_UpDown.Increment = yScaling * (decimal)Math.Pow(10, (double)powTenOfMaxY - 3);
+            kneeOneY_UpDown.DecimalPlaces = (int)Math.Max(0, 4 - powTenOfMaxY);
+
             kneeTwoX_UpDown.Maximum = graph.Max_XY.X;
             kneeTwoX_UpDown.Value = graph.KneePoints.RightKneePoint.X;
+            kneeTwoX_UpDown.Increment = kneeOneX_UpDown.Increment;
+            kneeTwoX_UpDown.DecimalPlaces = kneeOneX_UpDown.DecimalPlaces;
+
             kneeTwoY_UpDown.Maximum = graph.Max_XY.Y;
             kneeTwoY_UpDown.Value = graph.KneePoints.RightKneePoint.Y;
-            exposureTime_UpDown.Maximum = 10000;
-            exposureTime_UpDown.Value = (graph.Max_XY.X * 100);
+            kneeTwoY_UpDown.Increment = kneeOneY_UpDown.Increment;
+            kneeTwoY_UpDown.DecimalPlaces = kneeOneY_UpDown.DecimalPlaces;
+        }
+
+        private void exposureTime_UpDown_ValueChanged(object sender, EventArgs e)
+        {
+            Point newMax = new Point(exposureTime_UpDown.Value, graph.Max_XY.Y);
+            if (!newMax.Equals(graph.Max_XY))
+            {
+                if (!relationship_CheckBox.Checked)
+                {
+                    if (KneePoints.ValidKneePoints(graph.KneePoints, newMax))
+                    {
+                        graph.SetupGraph(graph.KneePoints, newMax);
+                        UpdateChart(graph);
+                    }
+                    else
+                    {
+                        exposureTime_UpDown.Value = graph.Max_XY.X;
+                    }
+                }
+                else // Preserve the relationship between a0, a1, and a2
+                {
+                    decimal leftKneeProportion = graph.KneePoints.LeftKneePoint.X / graph.Max_XY.X;
+                    decimal rightKneeProportion = graph.KneePoints.RightKneePoint.X / graph.Max_XY.X;
+
+                    Point newLeftKnee = new Point(leftKneeProportion * newMax.X, graph.KneePoints.LeftKneePoint.Y);
+                    Point newRightKnee = new Point(rightKneeProportion * newMax.X, graph.KneePoints.RightKneePoint.Y);
+
+                    if (KneePoints.ValidKneePoints(newLeftKnee, newRightKnee, newMax))
+                    {
+                        graph.SetupGraph(newLeftKnee, newRightKnee, newMax);
+                        UpdateChart(graph);
+                    }
+                    else
+                    {
+                        exposureTime_UpDown.Value = graph.Max_XY.X;
+                    }
+                }
+            }
         }
 
         private void slope_UpDown_ValueChanged(object sender, EventArgs e)
         {
-            NumericUpDown nud = (NumericUpDown)sender;
-            SingleExposureGraph seg = (SingleExposureGraph)graph;
-            seg.ClearExposures();
+            SingleExposureGraph seg = new SingleExposureGraph();
+            seg.SetupGraph(graph.KneePoints, graph.Max_XY);
 
             double theta = Graph.DegreesToRadians((double)slope_UpDown.Value);
-
-            seg.AddExposure((decimal)Math.Tan(theta));
+            double slopeNormalization = (double)(graph.Max_XY.Y / graph.Max_XY.X);
+            seg.AddExposure((decimal)(Math.Tan(theta) * slopeNormalization));
 
             graph = seg;
             UpdateChart(graph);
@@ -154,76 +207,72 @@ namespace PiecewiseLinearGraphing
 
         private void kneeOneX_UpDown_ValueChanged(object sender, EventArgs e)
         {
-            NumericUpDown nud = (NumericUpDown)sender;
-            Point newKnee = new Point(nud.Value, graph.KneePoints.LeftKneePoint.Y);
-            if (KneePoints.ValidKneePoints(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY))
+            Point newKnee = new Point(kneeOneX_UpDown.Value, graph.KneePoints.LeftKneePoint.Y);
+            if (!newKnee.Equals(graph.KneePoints.LeftKneePoint))
             {
-                graph.SetupGraph(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY);
-                UpdateChart(graph);
-            }
-            else
-            {
-                nud.Value = graph.KneePoints.LeftKneePoint.X;
+
+                if (KneePoints.ValidKneePoints(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY))
+                {
+                    graph.SetupGraph(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY);
+                    UpdateChart(graph);
+                }
+                else
+                {
+                    kneeOneX_UpDown.Value = graph.KneePoints.LeftKneePoint.X;
+                }
             }
         }
 
         private void kneeOneY_UpDown_ValueChanged(object sender, EventArgs e)
         {
-            NumericUpDown nud = (NumericUpDown)sender;
-            Point newKnee = new Point(graph.KneePoints.LeftKneePoint.X, nud.Value);
-            if (KneePoints.ValidKneePoints(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY))
+            Point newKnee = new Point(graph.KneePoints.LeftKneePoint.X, kneeOneY_UpDown.Value);
+            if (!newKnee.Equals(graph.KneePoints.LeftKneePoint))
             {
-                graph.SetupGraph(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY);
-                UpdateChart(graph);
-            }
-            else
-            {
-                nud.Value = graph.KneePoints.LeftKneePoint.Y;
+
+                if (KneePoints.ValidKneePoints(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY))
+                {
+                    graph.SetupGraph(newKnee, graph.KneePoints.RightKneePoint, graph.Max_XY);
+                    UpdateChart(graph);
+                }
+                else
+                {
+                    kneeOneY_UpDown.Value = graph.KneePoints.LeftKneePoint.Y;
+                }
             }
         }
 
         private void kneeTwoX_UpDown_ValueChanged(object sender, EventArgs e)
         {
-            NumericUpDown nud = (NumericUpDown)sender;
-            Point newKnee = new Point(nud.Value, graph.KneePoints.RightKneePoint.Y);
-            if (KneePoints.ValidKneePoints(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY))
+            Point newKnee = new Point(kneeTwoX_UpDown.Value, graph.KneePoints.RightKneePoint.Y);
+            if (!newKnee.Equals(graph.KneePoints.RightKneePoint))
             {
-                graph.SetupGraph(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY);
-                UpdateChart(graph);
-            }
-            else
-            {
-                nud.Value = graph.KneePoints.RightKneePoint.X;
+
+                if (KneePoints.ValidKneePoints(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY))
+                {
+                    graph.SetupGraph(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY);
+                    UpdateChart(graph);
+                }
+                else
+                {
+                    kneeTwoX_UpDown.Value = graph.KneePoints.RightKneePoint.X;
+                }
             }
         }
 
         private void kneeTwoY_UpDown_ValueChanged(object sender, EventArgs e)
         {
-            NumericUpDown nud = (NumericUpDown)sender;
-            Point newKnee = new Point(graph.KneePoints.RightKneePoint.X, nud.Value);
-            if (KneePoints.ValidKneePoints(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY))
+            Point newKnee = new Point(graph.KneePoints.RightKneePoint.X, kneeTwoY_UpDown.Value);
+            if (!newKnee.Equals(graph.KneePoints.RightKneePoint))
             {
-                graph.SetupGraph(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY);
-                UpdateChart(graph);
-            }
-            else
-            {
-                nud.Value = graph.KneePoints.RightKneePoint.Y;
-            }
-        }
-
-        private void exposureTime_UpDown_ValueChanged(object sender, EventArgs e)
-        {
-            NumericUpDown nud = (NumericUpDown)sender;
-            Point newMax = new Point((nud.Value / 100), graph.Max_XY.Y);
-            if (KneePoints.ValidKneePoints(graph.KneePoints, newMax))
-            {
-                graph.SetupGraph(graph.KneePoints.LeftKneePoint, graph.KneePoints.RightKneePoint, newMax);
-                UpdateChart(graph);
-            }
-            else
-            {
-                nud.Value = graph.Max_XY.X * 100;
+                if (KneePoints.ValidKneePoints(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY))
+                {
+                    graph.SetupGraph(graph.KneePoints.LeftKneePoint, newKnee, graph.Max_XY);
+                    UpdateChart(graph);
+                }
+                else
+                {
+                    kneeTwoY_UpDown.Value = graph.KneePoints.RightKneePoint.Y;
+                }
             }
         }
         #endregion
@@ -235,23 +284,21 @@ namespace PiecewiseLinearGraphing
                 MultipleExposureGraph newGraph = new MultipleExposureGraph();
                 newGraph.SetupGraph(graph.KneePoints, graph.Max_XY);
 
-                decimal startVal = (decimal)0.125;
-                decimal incrementVal = (decimal)0.125;
-                decimal stopVal = graph.KneePoints.A2 + (3 * incrementVal);
-                newGraph.SetMultipleExposures(startVal, incrementVal, stopVal);
+                newGraph.SetMultipleExposures();
 
                 graph = newGraph;
                 UpdateChart(graph);
             }
             else
             {
-                SingleExposureGraph newGraph = new SingleExposureGraph();
-                newGraph.SetupGraph(graph.KneePoints, graph.Max_XY);
+                SingleExposureGraph seg = new SingleExposureGraph();
+                seg.SetupGraph(graph.KneePoints, graph.Max_XY);
 
                 double theta = Graph.DegreesToRadians((double)slope_UpDown.Value);
-                newGraph.AddExposure((decimal)Math.Tan(theta));
+                double slopeNormalization = (double)(graph.Max_XY.Y / graph.Max_XY.X);
+                seg.AddExposure((decimal)(Math.Tan(theta) * slopeNormalization));
 
-                graph = newGraph;
+                graph = seg;
                 UpdateChart(graph);
 
             }
@@ -261,16 +308,21 @@ namespace PiecewiseLinearGraphing
 
         private void newExposures_Button_Click(object sender, EventArgs e)
         {
-            decimal startVal = (decimal)0.125;
-            decimal incrementVal = (decimal)0.125;
-            decimal stopVal = graph.KneePoints.A2 + (3 * incrementVal);
 
             MultipleExposureGraph meg = (MultipleExposureGraph)graph;
             meg.ClearExposures();
-            meg.SetMultipleExposures(startVal, incrementVal, stopVal);
+            meg.SetMultipleExposures();
 
             graph = meg;
             UpdateChart(graph);
+        }
+
+        private void relationship_CheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            kneeOneX_UpDown.Enabled = !relationship_CheckBox.Checked;
+            kneeOneY_UpDown.Enabled = !relationship_CheckBox.Checked;
+            kneeTwoX_UpDown.Enabled = !relationship_CheckBox.Checked;
+            kneeTwoY_UpDown.Enabled = !relationship_CheckBox.Checked;
         }
     }
 }
